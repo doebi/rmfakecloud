@@ -106,6 +106,7 @@ export default function OwnUserProfile() {
       </Form.Group>
       <Form.Group controlId="formNewPassword">
         <Form.Label>New Password</Form.Label>
+        <Form.Control type="password" placeholder="Password" />
         <PasswordField
           name="newPassword"
           placeholder="new password"

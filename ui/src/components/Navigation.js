@@ -30,18 +30,16 @@ const NavigationBar = () => {
                   Documents
                 </Nav.Link>
               </Nav.Item>
-              {isAdmin(user) && (
-                <Nav.Item>
-                  <Nav.Link as={NavLink} to="/users">Users</Nav.Link>
-                </Nav.Item>
-              )}
               <Nav.Item>
-                <Nav.Link as={NavLink} to="/generatecode">Code</Nav.Link>
               </Nav.Item>
               </Nav>
               <Nav className="ms-auto">
-              <NavDropdown id="userMenu" title={user.UserID} alignRight align="end" style={{'marginRight':50}}>
+              <NavDropdown id="userMenu" title={user.UserID} align="end">
                 {user.scopes === "sync15" && (<NavDropdown.Header>Using sync 15</NavDropdown.Header>)}
+                {isAdmin(user) && (
+                  <NavDropdown.Item as={NavLink} to="/admin">Administration</NavDropdown.Item>
+                )}
+                <NavDropdown.Item as={NavLink} to="/pair">Pair Device</NavDropdown.Item>
                 <NavDropdown.Item as={NavLink} to="/resetPassword">Reset Password</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item as={Button} onClick={handleLogout}>Log out </NavDropdown.Item>
