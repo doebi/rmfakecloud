@@ -20,6 +20,110 @@ import ContextMenu from './contextMenu'
 import RemoveDocDialog from './removeDocDialog'
 
 export default function FileTreeView({ reloadCnt }: { reloadCnt?: number }) {
+type HashDocElementProp = {
+  doc: HashDoc
+  onClickDoc?: (doc: HashDoc) => void
+  onClickDir?: (dir: HashDoc) => void
+} & React.HTMLAttributes<HTMLDivElement>
+
+function FileElement(params: HashDocElementProp) {
+  const { doc, onClickDoc, className, ...remainParams } = params
+
+  return (
+    <div
+      className={`flex cursor-pointer py-6 ${className || ''}`}
+      {...remainParams}
+      onClick={() => {
+        onClickDoc && onClickDoc(doc)
+      }}
+    >
+      <DocumentTextIcon className="top-[-1px] mr-2 h-6 w-6 shrink-0" />
+      <p className="max-w-[calc(100%-28px)] overflow-hidden text-ellipsis whitespace-nowrap leading-6">
+        {doc.name}
+      </p>
+    </div>
+  )
+}
+
+function DirElement(params: HashDocElementProp) {
+  const { doc, onClickDoc, className, ...remainParams } = params
+
+  return (
+    <div
+      className={`flex cursor-pointer py-6 ${className || ''}`}
+      {...remainParams}
+      onClick={() => {
+        onClickDoc && onClickDoc(doc)
+      }}
+    >
+      <FolderIcon className="top-[-1px] mr-2 h-6 w-6 shrink-0" />
+      <p className="max-w-[calc(100%-28px)] overflow-hidden text-ellipsis whitespace-nowrap leading-6">
+        {doc.name}
+      </p>
+    </div>
+  )
+}
+
+function TreeElement(params: HashDocElementProp) {
+  const { doc, ...remainParams } = params
+
+  if (doc.type === 'DocumentType') {
+    return (
+      <FileElement
+        doc={doc}
+        {...remainParams}
+      />
+    )
+  }
+
+  if (undefined !== doc.children) {
+    return (
+      <DirElement
+        doc={doc}
+        {...remainParams}
+      />
+    )
+  }
+
+  return <></>
+}
+
+interface BreakcrumbItem {
+  title: string
+  docs: HashDoc[]
+}
+
+function Breadcrumbs(params: {
+  items: BreakcrumbItem[]
+  className?: string
+  onClickBreadcrumb?: (item: BreakcrumbItem, index: number) => void
+}) {
+  const { items, className, onClickBreadcrumb } = params
+
+  const innerDom = items.map((item, i) => {
+    return (
+      <li
+        key={`breakcrumb-item-${i}`}
+        className="cursor-pointer after:mx-2 after:text-neutral-400 after:content-['>'] last:after:hidden"
+        onClick={(e) => {
+          e.preventDefault()
+          if (onClickBreadcrumb) {
+            onClickBreadcrumb(item, i)
+          }
+        }}
+      >
+        {item.title}
+      </li>
+    )
+  })
+
+  return (
+    <div className={className}>
+      <ul className="flex text-sm font-semibold text-sky-600">{innerDom}</ul>
+    </div>
+  )
+}
+
   const { t } = useTranslation()
   // Docs to rendered in the file tree view
   const [docs, setDocs] = useState<HashDoc[]>([])
